@@ -1,603 +1,278 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
   <meta charset="utf-8">
-  <meta name="description"
-    content="RoboAug: One Annotation to Hundreds of Scenes via Region-Contrastive Data Augmentation for Robotic Manipulation">
-  <meta name="keywords" content="Vision-Language-Action Model, Robot Learning, Imitation Learning, Latent Representation, Large-Scale Pretraining">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RoboAug: One Annotation to Hundreds of Scenes via Region-Contrastive Data Augmentation for Robotic Manipulation. Accepted at CoRL 2026.">
+  <meta name="keywords" content="RoboAug, CoRL 2026, robotic manipulation, data augmentation, robot learning">
+  <meta name="theme-color" content="#09182f">
   <title>RoboAug: One Annotation to Hundreds of Scenes via Region-Contrastive Data Augmentation for Robotic Manipulation</title>
-
-
-  <script>
-    window.dataLayer = window.dataLayer || [];
-  </script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-  <!-- <link href="./static/css/googlecss.css"
-        rel="stylesheet"> -->
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="icon" href="./static/images/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="./static/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
-
-  <script src="./static/js/jquerymin351.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
-  
-  <!-- React and ReactDOM for Stage-1 animation -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <style>
-    /* .author-block {
-        display: none;
-    } */
-
-    /* .publication-authors:hover .author-block {
-        display: block;
-    } */
-    
-    /* Stage-1 animation styles
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
-    #stage1-animation-container {
-        font-family: 'Inter', sans-serif;
-    } */
-</style>
-
+  <script src="./static/js/index.js" defer></script>
 </head>
-
 <body>
-
-<!--  <nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-    <div class="navbar-menu">
-      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-        <a class="navbar-item" href="https://x-humanoid.com">
-          <span class="icon">
-            <i class="fas fa-home"></i>
-          </span>
-        </a>
+  <a class="skip-link" href="#main">Skip to research</a>
+  <header class="site-header">
+    <nav class="site-nav page-width" aria-label="Main navigation">
+      <a class="site-brand" href="#top"><span class="brand-mark" aria-hidden="true">R</span><span>RoboAug<span class="brand-period">.</span></span></a>
+      <div class="nav-links">
+        <a href="#overview">Method</a><a href="#dataset">Dataset</a><a href="#experiments">Experiments</a><a href="#comparison">Comparison</a><a href="#citation">Cite</a>
       </div>
+      <a class="nav-code" href="https://github.com/Open-X-Humanoid/RoboAug.git" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i><span>Code</span><span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
 
-    </div>
-  </nav> -->
-
-  <section class="hero">
-    <div class="hero-body">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">RoboAug: One Annotation to Hundreds of Scenes via Region-Contrastive Data Augmentation for Robotic Manipulation </h1>
-            
-            <!-- Authors -->
-            <div class="is-size-5 publication-authors">
-              <span class="author-block">
-                <a href="#">Xinhua Wang</a><sup>1,*</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Kun Wu</a><sup>1,*</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Zhen Zhao</a><sup>1,*</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Hu Cao</a><sup>2</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Yinuo Zhao</a><sup>1,3</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Zhiyuan Xu</a><sup>1</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Meng Li</a><sup>1</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Shichao Fan</a><sup>1,4</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Di Wu</a><sup>1,5</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Yixue Zhang</a><sup>1,6</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Ning Liu</a><sup>1</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Zhengping Che</a><sup>1,†,✉</sup>,
-              </span>
-              <span class="author-block">
-                <a href="#">Jian Tang</a><sup>1,✉</sup>
-              </span>
-            </div>
-
-            <!-- Affiliations -->
-            <div class="is-size-6 publication-authors" style="line-height: 1.6;">
-              <div><span class="author-block"><sup>1</sup>Beijing Innovation Center of Humanoid Robotics</span></div>
-              <div><span class="author-block"><sup>2</sup>Computation, Information and Technology, Technical University of Munich</span></div>
-              <div><span class="author-block"><sup>3</sup>City University of Hong Kong</span></div>
-              <div><span class="author-block"><sup>4</sup>The School of Mechanical Engineering and Automation, Beihang University</span></div>
-              <div><span class="author-block"><sup>5</sup>State Key Laboratory of Multimedia Information Processing, School of Computer Science, Peking University</span></div>
-              <div><span class="author-block"><sup>6</sup>The School of Advanced Manufacturing and Robotics, Peking University</span></div>
-            </div>
-
-            <!-- Author notes -->
-            <div class="is-size-6 publication-authors" style="margin-top: 10px;">
-              <span class="author-block"><sup>*</sup>Equal contribution,</span>
-              <span class="author-block"><sup>†</sup>Team leader,</span>
-              <span class="author-block"><sup>✉</sup>Corresponding authors</span>
-            </div>
-            <!-- Links -->
-            <div class="column has-text-centered">
-              <div class="publication-links">
-                <!-- PDF Link -->
-                <span class="link-block">
-                  <a href="static/RoboAug_arxiv.pdf" class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                    </span>
-                    <span>Paper</span>
-                  </a>
-                </span>
-                <!-- ArXiv Link -->
-                <span class="link-block">
-                  <a href="https://arxiv.org/abs/2602.14032" class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                    </span>
-                    <span>arXiv</span>
-                  </a>
-                </span>
-                <!-- Code Link - Coming Soon -->
-                <span class="link-block">
-                  <a class="external-link button is-normal is-rounded is-dark" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Code (Coming Soon)</span>
-                  </a>
-                </span>
-                <!-- Dataset Link - Coming Soon -->
-                <span class="link-block">
-                  <a class="external-link button is-normal is-rounded is-dark" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;">
-                    <span class="icon">
-                      <i class="fas fa-database"></i>
-                    </span>
-                    <span>Dataset (Coming Soon)</span>
-                  </a>
-                </span>
-              </div>
-            </div>
-
-          </div>
-        </div>
+  <section class="publication-hero" id="top" aria-labelledby="publication-title">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-inner page-width">
+      <h1 id="publication-title"><span class="project-name">RoboAug<span class="sr-only">:</span></span><span class="project-title">One Annotation to Hundreds of Scenes via Region-Contrastive Data Augmentation for Robotic Manipulation</span></h1>
+      <p class="publication-venue"><a href="https://2026.corl.org/" target="_blank" rel="noopener noreferrer">CoRL 2026</a><span aria-hidden="true">·</span>Accepted paper</p>
+      <div class="publication-authors"><span class="author"><span>Xinhua Wang</span><sup>1,*</sup></span> <span class="author"><span>Kun Wu</span><sup>1,*</sup></span> <span class="author"><span>Zhen Zhao</span><sup>1,*</sup></span> <span class="author"><span>Hu Cao</span><sup>2</sup></span> <span class="author"><span>Yinuo Zhao</span><sup>1,3</sup></span> <span class="author"><span>Zhiyuan Xu</span><sup>1</sup></span> <span class="author"><span>Meng Li</span><sup>1</sup></span> <span class="author"><span>Shichao Fan</span><sup>1,4</sup></span> <span class="author"><span>Di Wu</span><sup>1,5</sup></span> <span class="author"><span>Yixue Zhang</span><sup>1,6</sup></span> <span class="author"><span>Ning Liu</span><sup>1</sup></span> <span class="author"><span>Zhengping Che</span><sup>1,†,✉</sup></span> <span class="author"><span>Jian Tang</span><sup>1,✉</sup></span></div>
+      <p class="primary-affiliation">Beijing Innovation Center of Humanoid Robotics</p>
+      <details class="affiliation-details">
+        <summary>Affiliations &amp; author notes <span class="details-chevron" aria-hidden="true">+</span></summary>
+        <div class="affiliation-content"><ol class="affiliation-list"><li><span class="affiliation-number">1</span><span>Beijing Innovation Center of Humanoid Robotics</span></li><li><span class="affiliation-number">2</span><span>School of Automation, Southeast University</span></li><li><span class="affiliation-number">3</span><span>City University of Hong Kong</span></li><li><span class="affiliation-number">4</span><span>The School of Mechanical Engineering and Automation, Beihang University</span></li><li><span class="affiliation-number">5</span><span>State Key Laboratory of Multimedia Information Processing, School of Computer Science, Peking University</span></li><li><span class="affiliation-number">6</span><span>The School of Advanced Manufacturing and Robotics, Peking University</span></li></ol><p class="author-notes"><sup>*</sup> Equal contribution <span>·</span> <sup>†</sup> Team leader <span>·</span> <sup>✉</sup> Corresponding authors</p></div>
+      </details>
+      <div class="resource-links" aria-label="Research resources">
+        <a class="button button-primary" href="https://github.com/Open-X-Humanoid/RoboAug.git" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i> Code <span aria-hidden="true">↗</span></a>
+        <a class="button button-hero" href="https://huggingface.co/datasets/X-Humanoid/RoboAug-Datasets" target="_blank" rel="noopener noreferrer"><i class="fas fa-database" aria-hidden="true"></i> Dataset <span aria-hidden="true">↗</span></a>
+        <a class="button button-hero" href="https://arxiv.org/abs/2602.14032" target="_blank" rel="noopener noreferrer"><i class="ai ai-arxiv" aria-hidden="true"></i> arXiv</a>
       </div>
+      <a class="hero-cite-link" href="#citation">Cite this work <span aria-hidden="true">↓</span></a>
     </div>
   </section>
 
-  <section class="hero teaser">
-    <div class="container is-max-desktop">
-      <div class="hero-body">
-        <!-- <video id="teaser" autoplay muted loop playsinline height="100%">
-          <source src="./static/videos/teaser.mp4" type="video/mp4">
-        </video> -->
-        <div class="columns is-centered">
-          <div class="column is-four-fifths">
-            <div class="yush-div-center">
-              <img src="./static/images/abstract.png" class="img-responsive">
-            </div>
-
-            <h2 class="subtitle has-text-centered">
-              We introduce <span style="font-weight: bold"> RoboAug</span>, a region-contrastive data augmentation framework. RoboAug enables robust robotic generalization in diverse, unseen scenes.
-            </h2>
-          </div>
-        </div>
-      </div>
+  <div class="teaser page-width">
+    <figure class="research-figure teaser-figure"><img src="./static/images/abstract.png" alt="RoboAug augments task-relevant demonstrations for robotic generalization" width="1737" height="1026" loading="eager" fetchpriority="high" decoding="async"><figcaption>RoboAug enables robust robotic generalization in diverse, unseen scenes.</figcaption></figure>
+    <div class="research-highlights" aria-label="Research highlights">
+      <div><strong>1</strong><span>reference annotation</span></div><div><strong>35k+</strong><span>real-world rollouts</span></div><div><strong>3</strong><span>robot platforms</span></div><div><strong>170</strong><span>unseen backgrounds</span></div>
     </div>
-  </section>
+  </div>
 
-  <section class="section" id="single-task-1">
-    <div class="container is-max-desktop">
-      <!-- Abstract. -->
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
-          <h2 class="title is-3">Abstract</h2>
-          <div class="content has-text-justified">
-            <p>
-              Enhancing the generalization capability of robotic learning to enable robots to operate effectively in diverse, unseen scenes is a fundamental and challenging problem. 
-              Existing approaches often depend on pretraining with large-scale data collection, which is labor-intensive and time-consuming, or on semantic data augmentation techniques that necessitate an impractical assumption of flawless upstream object detection in real-world scenarios. 
-              In this work, we propose <span style="font-weight: bold">RoboAug</span>, a novel generative data augmentation framework that significantly minimizes the reliance on large-scale pretraining and the perfect visual recognition assumption by requiring only the bounding box annotation of a single image during training. 
-              Leveraging this minimal information, <span style="font-weight: bold">RoboAug</span> employs pre-trained generative models for precise semantic data augmentation and integrates a plug-and-play region-contrastive loss to help models focus on task-relevant regions, thereby improving generalization and boosting task success rates. 
-              We conduct extensive real-world experiments on three robots, namely UR-5e, AgileX, and Tien Kung 2.0, spanning over <span style="font-weight: bold">35k</span> rollouts. 
-              Empirical results demonstrate that <span style="font-weight: bold">RoboAug</span> significantly outperforms state-of-the-art data augmentation baselines. 
-              Specifically, when evaluating generalization capabilities in unseen scenes featuring diverse combinations of backgrounds, distractors, and lighting conditions, our method achieves substantial gains over the baseline without augmentation. 
-              The success rates increase from 0.09 to 0.47 on UR-5e, from 0.16 to 0.60 on AgileX, and from 0.19 to 0.67 on Tien Kung 2.0. 
-              These results highlight the superior generalization and effectiveness of <span style="font-weight: bold">RoboAug</span> in real-world manipulation tasks.
-            </p>
-          </div>
-        </div>
+  <main id="main" class="page-width">
+    <section class="research-section abstract-section" id="abstract" aria-labelledby="abstract-title">
+      <div class="abstract-heading"><p class="eyebrow">Abstract</p><h2 id="abstract-title">Learning beyond<br>the training scene.</h2><a class="text-link" href="https://arxiv.org/abs/2602.14032" target="_blank" rel="noopener noreferrer">Read on arXiv <span aria-hidden="true">↗</span></a></div>
+      <div class="reading-copy"><h3 class="sr-only">Abstract</h3><p>Enhancing the generalization capability of robotic learning to enable robots to operate effectively in diverse, unseen scenes is a fundamental and challenging problem. Existing approaches often depend on pretraining with large-scale data collection, which is labor-intensive and time-consuming, or on semantic data augmentation techniques that necessitate an impractical assumption of flawless upstream object detection in real-world scenarios. In this work, we propose RoboAug, a novel generative data augmentation framework that significantly minimizes the reliance on large-scale pretraining and the perfect visual recognition assumption by requiring only the bounding box annotation of a single image during training. Leveraging this minimal information, RoboAug employs pre-trained generative models for precise semantic data augmentation and integrates a plug-and-play region-contrastive loss to help models focus on task-relevant regions, thereby improving generalization and boosting task success rates. We conduct extensive real-world experiments on three robots, namely UR-5e, AgileX, and Tien Kung 2.0, spanning over 35k rollouts.</p><p>Empirical results demonstrate that RoboAug significantly outperforms state-of-the-art data augmentation baselines. Specifically, when evaluating generalization capabilities in unseen scenes featuring diverse combinations of backgrounds, distractors, and lighting conditions, our method achieves substantial gains over the baseline without augmentation. The success rates increase from 0.09 to 0.47 on UR-5e, from 0.16 to 0.60 on AgileX, and from 0.19 to 0.67 on Tien Kung 2.0. These results highlight the superior generalization and effectiveness of RoboAug in real-world manipulation tasks.</p></div>
+    </section>
+
+    <section class="research-section" id="overview" aria-labelledby="overview-title">
+      <div class="section-heading">
+      <div><p class="eyebrow"><span>01</span> The method</p><h2><span id="overview-title">From one annotation<br>to robust policies.</span></h2><p class="section-intro">Overview of RoboAug. RoboAug contains three stages: (1) task-relevant region extraction, (2) semantic data augmentation, and (3) region-contrastive policy learning.</p></div>
+    </div>
+      <figure class="research-figure "><img src="./static/images/method.png" alt="The three-stage RoboAug framework: region extraction, semantic augmentation, and region-contrastive learning" width="1900" height="848" loading="lazy" decoding="async"></figure>
+      <div class="process-grid"><article class="process-card"><span class="step-number">01</span><h3>Task-Relevant Region Extraction</h3><p>In Step 1, key regions are identified in all videos through a training-free, one-shot matching mechanism that requires only a single manually labeled reference image. Next, these initial annotations are propagated across video frames using integrated segmentation and tracking to generate consistent, dense masks for the entire dataset.</p></article><article class="process-card"><span class="step-number">02</span><h3>Semantic Data Augmentation</h3><p>In Step 2, novel background scenes are synthesized in their entirety using a pre-trained generative model, thereby circumventing the visual artifacts typically associated with inpainting techniques. The task-relevant foreground is then composited onto these generated backgrounds, preserving critical structural integrity and massively expanding the training dataset.</p></article><article class="process-card"><span class="step-number">03</span><h3>Region-Contrastive Policy Learning</h3><p>In Stage 3, we train the robotic manipulation policy using a plug-and-play region-contrastive loss. This loss function helps the model focus on task-relevant regions while being invariant to irrelevant background variations, thereby improving generalization to unseen scenes and environments.</p></article></div>
+    </section>
+
+    <section class="research-section" id="dataset" aria-labelledby="dataset-title">
+      <div class="section-heading">
+      <div><p class="eyebrow"><span>02</span> Open data</p><h2><span id="dataset-title">RoboAug-D Dataset</span></h2><p class="section-intro">We introduce RoboAug-D, a large-scale object detection dataset manually annotated from the perspective of robotic manipulators. The dataset encompasses 33 distinct manipulation tasks, comprising a total of 73,749 keyframes and 366,835 bounding boxes across 46 object categories.</p></div><a class="button button-dark" href="https://huggingface.co/datasets/X-Humanoid/RoboAug-Datasets" target="_blank" rel="noopener noreferrer"><i class="fas fa-database" aria-hidden="true"></i> Get the dataset <span aria-hidden="true">↗</span></a>
+    </div>
+      <div class="dataset-layout">
+        <div class="media-panel"><div class="panel-label"><span>01</span><h3>Dataset examples</h3></div><figure class="research-figure "><img src="./static/images/dataset_example.png" alt="Annotated robotic manipulation keyframes from the RoboAug-D dataset" width="529" height="401" loading="lazy" decoding="async"></figure></div>
+        <div class="dataset-summary"><dl class="dataset-stats"><div><dt>Manipulation tasks</dt><dd>33</dd></div><div><dt>Keyframes</dt><dd>73,749</dd></div><div><dt>Bounding boxes</dt><dd>366,835</dd></div><div><dt>Object categories</dt><dd>46</dd></div></dl><div class="distribution-panel"><div class="panel-label"><span>02</span><h3>Data distribution</h3></div><figure class="research-figure "><img src="./static/images/dataset_statistics.png" alt="RoboAug-D object category distribution" width="498" height="165" loading="lazy" decoding="async"></figure></div></div>
       </div>
-      <br>
-      <br>
-      <!--/ Abstract. -->
+      <div class="dataset-evaluation">
+        <h3>Zero-shot detection evaluation</h3>
+        <p>We evaluate zero-shot object detection on the full RoboAug-D test set without fine-tuning, comparing RoboAug with GroundingDINO, LLMDet, and SAM3 using mAP@0.5. The figure reports the dataset-wide average and results for five representative object categories.</p>
+        <figure class="research-figure">
+          <a href="./static/images/zero-shot-sam3.png" target="_blank" rel="noopener noreferrer" aria-label="Open the full-resolution zero-shot detection figure">
+            <img src="./static/images/zero-shot-sam3.png" alt="CoRL 2026 Figure 3: mAP@0.5 comparison of GroundingDINO, LLMDet, SAM3, and RoboAug" width="7200" height="3200" loading="lazy" decoding="async">
+          </a>
+          <figcaption>Figure 3 from the CoRL 2026 paper. Zero-shot detection results on RoboAug-D, including SAM3. <a href="./static/images/zero-shot-sam3.png" target="_blank" rel="noopener noreferrer">View full resolution <span aria-hidden="true">↗</span></a></figcaption>
+        </figure>
+      </div>
+    </section>
 
-     <!-- <div class="columns is-centered">
-        <div class="column is-four-fifths">
-          <video id="teaser" autoplay muted loop playsinline height="100%" controls>
-            <source src="./static/videos/teaser.mp4" type="video/mp4">
+    <section class="research-section" id="setup" aria-labelledby="setup-title">
+      <div class="section-heading">
+      <div><p class="eyebrow"><span>03</span> Real-world validation</p><h2><span id="setup-title">Three robots.<br>Over 35,000 trials.</span></h2><p class="section-intro">We evaluated RoboAug across three robot embodiments (Tien Kung 2.0, Single-Arm UR-5e, and AgileX Cobot Magic 2.0), spanning tasks from single-arm pick-and-place to precise bimanual manipulation. Through over 35,000 real-world trials, we rigorously assess its generalization to unseen scenes with diverse backgrounds, distractors, and lighting conditions.</p></div>
+    </div>
+      <div class="platform-tags"><span>Single-Arm UR-5e</span><span>AgileX Cobot Magic 2.0</span><span>Tien Kung 2.0</span></div>
+      <figure class="research-figure "><img src="./static/images/exp_setup.png" alt="Robot embodiments, manipulation tasks, and experimental equipment" width="1963" height="1326" loading="lazy" decoding="async"></figure>
+    </section>
+
+    <section class="research-section" id="experiments" aria-labelledby="experiments-title">
+      <div class="section-heading">
+      <div><p class="eyebrow"><span>04</span> Generalization in action</p><h2><span id="experiments-title">RoboAug real-world experiments</span></h2></div>
+    </div>
+      <nav class="experiment-index" aria-label="Experiment groups"><a href="#compositional">Compositional</a><a href="#dual-factor">Dual-factor</a><a href="#single-factor">Single-factor</a></nav>
+      <article class="experiment-group" id="compositional" aria-labelledby="compositional-title">
+        <div class="experiment-heading"><span class="group-number">A</span><div><h3 id="compositional-title">Compositional generalization</h3><p>We evaluated RoboAug under triple-factor variations: 3 unseen backgrounds, 4 lighting conditions, and 3 distractors.</p></div></div>
+        <figure class="research-figure "><img src="./static/images/main_result.png" alt="Compositional generalization results under background, lighting, and distractor changes" width="986" height="386" loading="lazy" decoding="async"></figure>
+        <div class="platform-group"><h4 class="platform-heading"><span class="platform-dot" aria-hidden="true"></span>Tien Kung 2.0</h4><div class="video-grid"><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-tk2-1.jpg" aria-label="TK2-WeightApple experiment video" width="854" height="480">
+            <source src="./static/videos/web-tk2-1.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-tk2-1.mp4">Open the video</a>.</p>
           </video>
-          <br>
-          <br>
-        </div>
-      </div> -->
+          <figcaption>TK2-WeightApple</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-tk2-2.jpg" aria-label="TK2-LayPlateBowl experiment video" width="854" height="480">
+            <source src="./static/videos/web-tk2-2.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-tk2-2.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>TK2-LayPlateBowl</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-tk2-3.jpg" aria-label="TK2-HeatBread experiment video" width="854" height="480">
+            <source src="./static/videos/web-tk2-3.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-tk2-3.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>TK2-HeatBread</figcaption>
+        </figure></div></div><div class="platform-group"><h4 class="platform-heading"><span class="platform-dot" aria-hidden="true"></span>AgileX Cobot Magic 2.0</h4><div class="video-grid"><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-agx-1.jpg" aria-label="AGX-UprightMug experiment video" width="854" height="480">
+            <source src="./static/videos/web-agx-1.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-agx-1.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>AGX-UprightMug</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-agx-2.jpg" aria-label="AGX-PutCornPlate experiment video" width="854" height="480">
+            <source src="./static/videos/web-agx-2.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-agx-2.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>AGX-PutCornPlate</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-agx-3.jpg" aria-label="AGX-CloseDrawerCorn experiment video" width="854" height="480">
+            <source src="./static/videos/web-agx-3.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-agx-3.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>AGX-CloseDrawerCorn</figcaption>
+        </figure></div></div><div class="platform-group"><h4 class="platform-heading"><span class="platform-dot" aria-hidden="true"></span>Single-Arm UR-5e</h4><div class="video-grid"><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-ur-1.jpg" aria-label="UR-MoveLemon experiment video" width="854" height="480">
+            <source src="./static/videos/web-ur-1.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-ur-1.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-MoveLemon</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-ur-2.jpg" aria-label="UR-OpenDrawerCorn experiment video" width="854" height="480">
+            <source src="./static/videos/web-ur-2.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-ur-2.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-OpenDrawerCorn</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-ur-3.jpg" aria-label="UR-StoreCarrot experiment video" width="854" height="480">
+            <source src="./static/videos/web-ur-3.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-ur-3.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-StoreCarrot</figcaption>
+        </figure></div></div>
+      </article>
+      <article class="experiment-group" id="dual-factor" aria-labelledby="dual-title">
+        <div class="experiment-heading"><span class="group-number">B</span><div><h3 id="dual-title">Dual-factor generalization</h3><p>Additionally, we evaluated RoboAug under dual-factor variations: 5 unseen backgrounds and 10 task-irrelevant distractors.</p></div></div>
+        <figure class="research-figure "><img src="./static/images/dual_result.png" alt="Dual-factor generalization results across backgrounds and distractors" width="985" height="257" loading="lazy" decoding="async"></figure>
+        <div class="video-grid"><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-dual-1-new.jpg" aria-label="UR-MoveLemon experiment video" width="854" height="480">
+            <source src="./static/videos/web-dual-1-new.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-dual-1-new.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-MoveLemon</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-dual-3.jpg" aria-label="AGX-StackBowl experiment video" width="854" height="480">
+            <source src="./static/videos/web-dual-3.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-dual-3.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>AGX-StackBowl</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-dual-2-new.jpg" aria-label="UR-PutCornPot experiment video" width="854" height="480">
+            <source src="./static/videos/web-dual-2-new.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-dual-2-new.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-PutCornPot</figcaption>
+        </figure></div>
+      </article>
+      <article class="experiment-group" id="single-factor" aria-labelledby="single-title">
+        <div class="experiment-heading"><span class="group-number">C</span><div><h3 id="single-title">Single-factor generalization</h3><p>We also evaluated RoboAug under single-factor variations: up to 170 unseen backgrounds, 20 lighting conditions, and up to 10 task-irrelevant distractors.</p></div></div>
+        <div class="video-grid"><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-ur-170-new.jpg" aria-label="UR-PutCornPot with 170 Backgrounds experiment video" width="854" height="480">
+            <source src="./static/videos/web-ur-170-new.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-ur-170-new.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-PutCornPot with 170 Backgrounds</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-agx-light.jpg" aria-label="AGX-CloseDrawerCorn with 20 Lighting experiment video" width="854" height="480">
+            <source src="./static/videos/web-agx-light.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-agx-light.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>AGX-CloseDrawerCorn with 20 Lighting</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-ur-distractor.jpg" aria-label="UR-StackBowl with 1,3,5,10 Distractors experiment video" width="854" height="480">
+            <source src="./static/videos/web-ur-distractor.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-ur-distractor.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-StackBowl with 1,3,5,10 Distractors</figcaption>
+        </figure></div>
+      </article>
+    </section>
 
-      <!-- Overview. -->
-      <div class="columns is-centered">
-        <div class="column is-four-fifths">
-          <h2 class="title is-3">Overview</h2>
-          <div class="content has-text-justified">
-            <div class="columns" id="4pic">
-              <div class="column has-text-centered">
-                  <img src="./static/images/method.png" class="interpolation-image" alt="" style="display: block; width: 100%; margin-left: auto; margin-right: auto">
-              </div>
-          </div>
-
-            <p> <span style="font-weight: bold">Overview of RoboAug</span>. RoboAug contains three stages: (1) task-relevant region extraction, (2) semantic data augmentation, and (3) region-contrastive policy learning.
-			</p>
-
-          </div>
-        </div>
-      </div>
-      <br>
-      <br>
-      <!-- Overview. -->
-
-	  
-	  <!-- Stage-1: Task-Relevant Region Extraction -->
-<div class="columns is-centered">
-  <div class="column is-four-fifths">
-    <div class="columns">
-      <!-- Step 1 -->
-      <div class="column">
-        <div class="box" style="height: 100%; background: linear-gradient(135deg, #8d97ce 100%, #daddf3 100%); border-radius: 15px; padding: 30px;">
-          <h3 class="title is-4 has-text-white has-text-centered" style="margin-bottom: 20px;">
-            Step 1
-          </h3>
-          <h4 class="subtitle is-5 has-text-white has-text-centered" style="margin-bottom: 15px; font-weight: 600;">
-            Task-Relevant Region Extraction
-          </h4>
-          <div class="content has-text-white has-text-justified" style="font-size: 0.95rem; line-height: 1.8;">
-            <p>
-              In Step 1, key regions are identified in all videos through a training-free, one-shot matching mechanism that requires only a single manually labeled reference image.
-              Next, these initial annotations are propagated across video frames using integrated segmentation and tracking to generate consistent, dense masks for the entire dataset.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Step 2 -->
-      <div class="column">
-        <div class="box" style="height: 100%; background: linear-gradient(135deg, #f2ac75 100%, #fceed8 100%); border-radius: 15px; padding: 30px;">
-          <h3 class="title is-4 has-text-white has-text-centered" style="margin-bottom: 20px;">
-            Step 2
-          </h3>
-          <h4 class="subtitle is-5 has-text-white has-text-centered" style="margin-bottom: 15px; font-weight: 600;">
-            Semantic Data Augmentation
-          </h4>
-          <div class="content has-text-white has-text-justified" style="font-size: 0.95rem; line-height: 1.8;">
-            <p>
-              In Step 2, novel background scenes are synthesized in their entirety using a pre-trained generative model, thereby circumventing the visual artifacts typically associated with inpainting techniques.
-              The task-relevant foreground is then composited onto these generated backgrounds, preserving critical structural integrity and massively expanding the training dataset.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Step 3 -->
-      <div class="column">
-        <div class="box" style="height: 100%; background: linear-gradient(135deg, #67babf 100%, #e1f5ef 100%); border-radius: 15px; padding: 30px;">
-          <h3 class="title is-4 has-text-white has-text-centered" style="margin-bottom: 20px;">
-            Step 3
-          </h3>
-          <h4 class="subtitle is-5 has-text-white has-text-centered" style="margin-bottom: 15px; font-weight: 600;">
-            Region-Contrastive Policy Learning
-          </h4>
-          <div class="content has-text-white has-text-justified" style="font-size: 0.95rem; line-height: 1.8;">
-            <p>
-              In Stage 3, we train the robotic manipulation policy using a plug-and-play region-contrastive loss. 
-              This loss function helps the model focus on task-relevant regions while being invariant to irrelevant background variations, 
-              thereby improving generalization to unseen scenes and environments.
-            </p>
-          </div>
-        </div>
-      </div>
+    <section class="research-section comparison-section" id="comparison" aria-labelledby="comparison-title">
+      <div class="section-heading">
+      <div><p class="eyebrow"><span>05</span> Side-by-side evaluation</p><h2><span id="comparison-title">Comparison with baselines</span></h2><p class="section-intro">RoboAug was compared against baseline methods including No Aug, GenAug, Roboengine-T, and Roboengine-G. We selected the best baseline (GenAug) for comparative demonstration videos. Demonstration videos are shown below:</p></div>
     </div>
-  </div>
-</div>
-<br>
-<br>
-
-<!-- Dataset Section -->
-<div class="columns is-centered">
-  <div class="column is-four-fifths">
-    <h2 class="title is-3">RoboAug-D Dataset</h2>
-    <div class="content has-text-justified">
-      <p>
-        We introduce RoboAug-D, a large-scale object detection dataset manually annotated from the perspective of robotic manipulators.
-        The dataset encompasses 33 distinct manipulation tasks, comprising a total of 73,749 keyframes and 366,835 bounding boxes across 46 object categories.
-      </p>
-    </div>
-    <div class="columns" id="dataset-images">
-      <div class="column is-half has-text-centered">
-        <p style="font-size: 125%"><b>Dataset Example</b></p>
-        <img src="./static/images/dataset_example.png" class="interpolation-image" alt="Dataset Example" style="display: block; width: 100%; height: 300px; object-fit: contain; margin-left: auto; margin-right: auto">
+      <div class="video-grid"><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-baseline-1-new.jpg" aria-label="AGX-StackBowl experiment video" width="854" height="480">
+            <source src="./static/videos/web-baseline-1-new.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-baseline-1-new.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>AGX-StackBowl</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-baseline-3-new.jpg" aria-label="TK2-CollectBall experiment video" width="854" height="480">
+            <source src="./static/videos/web-baseline-3-new.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-baseline-3-new.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>TK2-CollectBall</figcaption>
+        </figure><figure class="video-card">
+          <video controls muted loop playsinline preload="none" poster="./static/images/video-posters/web-baseline-2-new.jpg" aria-label="UR-StackBowl experiment video" width="854" height="480">
+            <source src="./static/videos/web-baseline-2-new.mp4" type="video/mp4">
+            <p>Your browser does not support embedded video. <a href="./static/videos/web-baseline-2-new.mp4">Open the video</a>.</p>
+          </video>
+          <figcaption>UR-StackBowl</figcaption>
+        </figure></div>
+    </section>
+    <section class="research-section citation-section" id="citation" aria-labelledby="citation-title">
+      <div class="section-heading">
+        <div><p class="eyebrow"><span>06</span> Publication</p><h2 id="citation-title">Cite RoboAug</h2><p class="section-intro">If you find RoboAug or RoboAug-D useful in your research, please cite our paper.</p></div>
       </div>
-      <div class="column is-half has-text-centered">
-        <p style="font-size: 125%"><b>Data Distribution</b></p>
-        <img src="./static/images/dataset_statistics.png" class="interpolation-image" alt="Data Distribution" style="display: block; width: 100%; height: 300px; object-fit: contain; margin-left: auto; margin-right: auto">
-      </div>
-    </div>
-    
-    <!-- Additional content below Data Distribution -->
-    <div class="content has-text-justified" style="margin-top: 20px;">
-      <p>
-        We evaluated the zero-shot object detection capabilities of Vision Foundation Models (VFMs) on the full test set of the RoboAug-D dataset, with a focus on challenges inherent to robotic manipulation scenarios. 
-        Model performance was compared using mean average precision(mAP@0.5), and our proposed approach was benchmarked against the state-of-the-art detection methods GroundingDINO and LLMDet.
-      </p>
-    </div>
-    
-    <!-- Additional image -->
-    <div class="columns" id="additional-dataset-image" style="margin-top: 10px;">
-      <div class="column has-text-centered">
-        <img src="./static/images/comparison_result.png" class="interpolation-image" alt="Additional Dataset Information" style="display: block; width: 80%; margin-left: auto; margin-right: auto">
-      </div>
-    </div>
-  </div>
-</div>
-	  
-      <div class="columns is-centered">
-        <div class="column is-four-fifths">
-          <h2 class="title is-3">Experiment Setup</h2>
-          <div class="content has-text-justified">
-            <div class="columns" id="4pic" style="margin-bottom: 5px;">
-              <div class="column has-text-centered">
-                  <img src="./static/images/exp_setup.png" class="interpolation-image" alt="" style="display: block; width: 80%; margin-left: auto; margin-right: auto">
-              </div>
-          </div>
-
-            <p>We evaluated RoboAug across three robot embodiments (Tien Kung 2.0, Single-Arm UR-5e, and AgileX Cobot Magic 2.0), spanning tasks from single-arm pick-and-place to precise bimanual manipulation. Through over 35,000 real-world trials, we rigorously assess its generalization to unseen scenes with diverse backgrounds, distractors, and lighting conditions. 
-            </p>
-
-          </div>
+      <div class="citation-layout">
+        <aside class="publication-card" aria-label="Publication details">
+          <a class="publication-logo" href="https://2026.corl.org/" target="_blank" rel="noopener noreferrer" aria-label="CoRL 2026 official conference website"><img src="./static/images/corl-2026.png" alt="CoRL conference logo" width="1280" height="640" loading="lazy"></a>
+          <p class="publication-conference">10th Conference on Robot Learning</p>
+          <p class="publication-location">Austin, Texas · 2026</p>
+          <span class="publication-acceptance">Accepted paper</span>
+          <p class="citation-summary"><strong>Wang et al., 2026</strong><span>RoboAug: One Annotation to Hundreds of Scenes via Region-Contrastive Data Augmentation for Robotic Manipulation</span></p>
+          <a class="text-link" href="https://arxiv.org/abs/2602.14032" target="_blank" rel="noopener noreferrer">Read on arXiv <span aria-hidden="true">↗</span></a>
+        </aside>
+        <div class="bibtex-panel">
+          <div class="bibtex-toolbar"><span>arXiv · BibTeX</span><div><a href="static/RoboAug_arxiv.bib" download>Download .bib</a><button type="button" class="copy-citation" aria-label="Copy RoboAug BibTeX citation"><i class="far fa-copy" aria-hidden="true"></i><span>Copy BibTeX</span></button></div></div>
+          <pre><code id="bibtex-citation">@misc{wang2026roboaug,
+  title     = {{RoboAug}: One Annotation to Hundreds of Scenes via
+               Region-Contrastive Data Augmentation for Robotic Manipulation},
+  author    = {Wang, Xinhua
+               and Wu, Kun
+               and Zhao, Zhen
+               and Cao, Hu
+               and Zhao, Yinuo
+               and Xu, Zhiyuan
+               and Li, Meng
+               and Fan, Shichao
+               and Wu, Di
+               and Zhang, Yixue
+               and Liu, Ning
+               and Che, Zhengping
+               and Tang, Jian},
+  year      = {2026},
+  eprint    = {2602.14032},
+  archivePrefix = {arXiv},
+  url       = {https://arxiv.org/abs/2602.14032}
+}</code></pre>
+          <p id="citation-status" class="citation-status" role="status" aria-live="polite"></p>
         </div>
       </div>
-      <br>
-      <br>
-      
+    </section>
+  </main>
 
-		<div class="columns is-centered">
-		  <div class="column is-four-fifths">
-			<h2 class="title is-3">RoboAug Real-World Experiments</h2>
-			  <div class="content has-text-justified">		
-            <h3 class="title is-4">Compositional Generalization Evaluation</h3>
-            <p>We evaluated RoboAug under <span style="font-weight: bold">triple-factor </span>variations: 3 unseen backgrounds, 4 lighting conditions, and 3 distractors.
-            </p>
-        </div>
-        <div class="columns" id="4pic">
-        <div class="column is-centered">
-          <img src="./static/images/main_result.png" class="interpolation-image" alt="" style="display: block; width: 100%; margin-left: auto; margin-right: auto">
-        </div>
-        </div>
-			  <div class="columns">
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>TK2-WeightApple</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-tk2-1.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>TK2-LayPlateBowl</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-tk2-2.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>TK2-HeatBread</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-tk2-3.mp4" type="video/mp4">
-				  </video>
-				</div>
-			  </div>	
-			  <div class="columns">
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>AGX-UprightMug</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-agx-1.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>AGX-PutCornPlate</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-agx-2.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>AGX-CloseDrawerCorn</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-agx-3.mp4" type="video/mp4">
-				  </video>
-				</div>
-			  </div>
-			  <div class="columns">
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-MoveLemon</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-ur-1.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-OpenDrawerCorn</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-ur-2.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-StoreCarrot</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-ur-3.mp4" type="video/mp4">
-				  </video>
-				</div>
-			  </div>
-        
-
-			<div class="content has-text-justified">
-        <h3 class="title is-4">Dual-Factor Generalization Evaluation</h3>		
-            <p>Additionally, we evaluated RoboAug under <span style="font-weight: bold">dual-factor </span>variations: 5 unseen backgrounds and 10 task-irrelevant distractors.
-			</p>
-      </div>
-      <div class="columns" id="4pic">
-        <div class="column is-centered">
-          <img src="./static/images/dual_result.png" class="interpolation-image" alt="" style="display: block; width: 100%; margin-left: auto; margin-right: auto">
-      </div>
-      </div>
-			  <div class="columns is-centered">
-      </div>
-
-			  <div class="columns">
-          <div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-MoveLemon</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-dual-1-new.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>AGX-StackBowl</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-dual-3.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-PutCornPot</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-dual-2-new.mp4" type="video/mp4">
-				  </video>
-				</div>
-			  </div>
-			<div class="content has-text-justified">
-        <h3 class="title is-4">Single-Factor Generalization Evaluation</h3>		
-            <p>We also evaluated RoboAug under <span style="font-weight: bold">single-factor </span>variations: up to 170 unseen backgrounds, 20 lighting conditions, and up to 10 task-irrelevant distractors.
-			</p>
-      </div>
-			  <div class="columns is-centered">
-      </div>
-
-			  <div class="columns">
-          <div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-PutCornPot with 170 Backgrounds</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-ur-170-new.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>AGX-CloseDrawerCorn with 20 Lighting</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-agx-light.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-StackBowl with 1,3,5,10 Distractors</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-ur-distractor.mp4" type="video/mp4">
-				  </video>
-				</div>
-			  </div>
-
-		  </div>
-		</div>
-		<br>
-		<br>
-		
-
-		
-		
-		
-		
-		
-		
-	  <!-- Comparison with Baselines -->
-      <div class="columns is-centered">
-        <div class="column is-four-fifths">
-          <h2 class="title is-3">Comparison with Baselines</h2>
-		  
-          <div class="content has-text-justified">		
-            <p>RoboAug was compared against baseline methods including No Aug, GenAug, Roboengine-T, and Roboengine-G. We selected <span style="font-weight: bold">the best baseline (GenAug)</span> for comparative demonstration videos. Demonstration videos are shown below:
-			</p>
-          </div>
-          <div class="columns">
-          <div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>AGX-StackBowl</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-baseline-1-new.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>TK2-CollectBall</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-baseline-3-new.mp4" type="video/mp4">
-				  </video>
-				</div>
-				<div class="column has-text-centered">
-				  <p style="font-size: 125%"><b>UR-StackBowl</b></p>
-				  <video poster="" id="" autoplay controls muted loop height="100%" playbackrate="2.0" style="border-radius: 5px;">
-					<source src="./static/videos/web-baseline-2-new.mp4" type="video/mp4">
-				  </video>
-				</div>
-        </div>
-        </div>
-      </div>
-		  
-   
-
-  </section>
-
-  <footer class="footer">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-8">
-          <div class="content has-text-centered">
-            <p>
-              The website template was borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a>
-              and <a href="https://eureka-research.github.io/">Eureka</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <footer class="site-footer">
+    <div class="page-width"><div class="footer-top"><a class="site-brand" href="#top"><span class="brand-mark" aria-hidden="true">R</span><span>RoboAug<span class="brand-period">.</span></span></a><p>Accepted at CoRL 2026</p><a class="footer-top-link" href="#top">Back to top <span aria-hidden="true">↑</span></a></div><div class="footer-bottom"><p>The original website template was borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a> and <a href="https://eureka-research.github.io/">Eureka</a>.</p><a href="https://github.com/Open-X-Humanoid/RoboAug.git" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div></div>
   </footer>
-
-
-
-
-
 </body>
-
 </html>
