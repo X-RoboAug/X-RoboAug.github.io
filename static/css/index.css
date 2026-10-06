@@ -193,6 +193,10 @@ h2 { font-size: clamp(28px, 3vw, 38px); font-weight: 750; letter-spacing: -.045e
 .footer-top > p { font-size: 12px; }
 .footer-top-link { color: #d4e6f5; font-size: 12px; }
 .footer-top-link span { margin-left: 5px; }
+.footer-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding-top: 20px; font-size: 13px; font-style: normal; }
+.footer-contact .contact-label { font-weight: 600; }
+.footer-contact a { color: #d4e6f5; overflow-wrap: anywhere; }
+.footer-contact a:hover { color: var(--cyan); text-decoration: underline; }
 .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 20px; font-size: 11px; line-height: 1.8; }
 .footer-bottom a { color: #c4d5e8; }
 .footer-bottom a:hover, .footer-top-link:hover { color: var(--cyan); }
